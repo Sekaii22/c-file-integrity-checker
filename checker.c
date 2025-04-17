@@ -11,12 +11,14 @@
 /* BUILD COMMAND: gcc -fsanitize=address -o checker checker.c -lssl -lcrypto */
 
 /* 
-    Takes in a file and string pointer, 
+    Takes in a file path and string pointer, 
     calculate the hash of the file and store it in string pointer.
     Returns 0 if sucessful, return -1 otherwise.
 */
-int calculateHash(FILE *file, char *output) {
+int calculateHash(char *filePath, char *output) {
+    FILE *file = fopen(filePath, "r");
     char fBuffer[BUFFER_LEN];
+
     EVP_MD_CTX *ctxP = NULL;
     EVP_MD *md5P = NULL;
     unsigned char digestOutput[16];                // md5 output is 32 hex, 1 hex is 4 bits so total is 16 bytes
@@ -72,6 +74,7 @@ int calculateHash(FILE *file, char *output) {
     EVP_MD_CTX_free(ctxP);
 
     strcpy(output, hashBuffer);
+    fclose(file);
     return 0;
 }
 
@@ -80,12 +83,14 @@ int calculateHash(FILE *file, char *output) {
     Read paths from monitor.txt and store in array of char pointer.
     Return number of paths.
 */
-int getMonitoredPaths(char *outputPaths[MAX_PATHS]) {
-    FILE* pathsFileP = fopen(MONITOR_FILE_PATH, "r");
+int getMonitoredPaths(char *monitoredFilePath, char *outputPaths[MAX_PATHS]) {
+    FILE* pathsFileP = fopen(monitoredFilePath, "r");
     char pathBuffer[BUFFER_LEN];
     int count = 0;
 
     while(fgets(pathBuffer, BUFFER_LEN-1, pathsFileP)) {
+        pathBuffer[strcspn(pathBuffer, "\n")] = 0;              // remove newline char from path read
+
         outputPaths[count] = malloc(strlen(pathBuffer) + 1);
 
         if (outputPaths[count] == NULL) {
@@ -106,31 +111,42 @@ int getMonitoredPaths(char *outputPaths[MAX_PATHS]) {
     Return 0 if successful, otherwise -1;
 */
 int init() {
+    char *monitoredPaths[MAX_PATHS];
 
-}
+    // read all paths
+    int numOfPaths = getMonitoredPaths(MONITOR_FILE_PATH, monitoredPaths);
+    if (numOfPaths < 0)
+        return -1;
 
-int main() {
-    // FILE *fileP = fopen("files_to_monitor/m1.txt", "r");
-    // char hash[MD5_HEX_LEN + 1];
+    // store all hashes here
+    FILE *hashStoreFileP = fopen(HASH_STORE_FILE_PATH, "w");
     
-    // if (calculateHash(fileP, hash) != 0) {
-    //     return 1;
-    // }
-    // //free(hash);
-
-    // printf("%s\n", hash);
-
-    char *paths[MAX_PATHS];
-    int numOfPaths = getMonitoredPaths(paths);
     for (int i = 0; i < numOfPaths; i++) {
-        printf("%s\n", paths[i]);
+        char hash[MD5_HEX_LEN + 1] = {0};
+
+        // calculate the hash for that file and store it in hash variable
+        if (calculateHash(monitoredPaths[i], hash) != 0)
+            return -1;
+
+        // store hash and file path
+        fputs(hash, hashStoreFileP);
+        fprintf(hashStoreFileP, " %s\n", monitoredPaths[i]);
     }
 
     // free allocated memory
     for (int i = 0; i < numOfPaths; i++) {
-        free(paths[i]);
+        free(monitoredPaths[i]);
     }
-    
+
+    fclose(hashStoreFileP);
+    return 0;
+}
+
+int main() {
+    init();
+    // char out[MD5_HEX_LEN + 1];
+    // calculateHash("files_to_monitor/m2.txt", out);
+    // printf("%s\n", out);
     
     // // print out hash hex string
     // for (int i = 0; i < 16; i++) {
