@@ -3,12 +3,17 @@
 #include <openssl/evp.h>
 #include <openssl/bio.h>
 #define BUFFER_LEN 1024
+#define MAX_PATHS 1000
 #define MD5_HEX_LEN 32 
+#define MONITOR_FILE_PATH "monitor.txt"
+#define HASH_STORE_FILE_PATH "hashes.txt"
+
+/* BUILD COMMAND: gcc -fsanitize=address -o checker checker.c -lssl -lcrypto */
 
 /* 
     Takes in a file and string pointer, 
     calculate the hash of the file and store it in string pointer.
-    Returns 0 if sucessful, return 1 otherwise.
+    Returns 0 if sucessful, return -1 otherwise.
 */
 int calculateHash(FILE *file, char *output) {
     char fBuffer[BUFFER_LEN];
@@ -21,20 +26,20 @@ int calculateHash(FILE *file, char *output) {
     ctxP = EVP_MD_CTX_new();
     if (!ctxP) {
         printf("Digest context is null\n");
-        return 1;
+        return -1;
     }
 
     // fetch the md5 algorithm implementation
     md5P = EVP_MD_fetch(NULL, "MD5", NULL);
     if (md5P == NULL) {
         printf("Fetching failed\n");
-        return 1;
+        return -1;
     }
 
     // initialize digest operation
     if (!EVP_DigestInit_ex(ctxP, md5P, NULL)) {
         printf("Error with initializing digest\n");
-        return 1;
+        return -1;
     }
 
     // reads from file and put into fBuffer
@@ -42,14 +47,14 @@ int calculateHash(FILE *file, char *output) {
         // pass fBuffer to be digested
         if (!EVP_DigestUpdate(ctxP, fBuffer, strlen(fBuffer))) {
             printf("Error with digest update\n");
-            return 1;
+            return -1;
         }
     }
 
     // calculate the final digest
     if (!EVP_DigestFinal_ex(ctxP, digestOutput, NULL)) {
         printf("Error with calcualting digest\n");
-        return 1;
+        return -1;
     }
 
     // store hash hex string as literal in hashBuffer
@@ -70,16 +75,61 @@ int calculateHash(FILE *file, char *output) {
     return 0;
 }
 
-int main() {
-    FILE *fileP = fopen("files_to_monitor/m1.txt", "r");
-    char hash[MD5_HEX_LEN + 1];
-    
-    if (calculateHash(fileP, hash) != 0) {
-        return 1;
-    }
-    //free(hash);
+/*
+    Takes an array of char pointer,
+    Read paths from monitor.txt and store in array of char pointer.
+    Return number of paths.
+*/
+int getMonitoredPaths(char *outputPaths[MAX_PATHS]) {
+    FILE* pathsFileP = fopen(MONITOR_FILE_PATH, "r");
+    char pathBuffer[BUFFER_LEN];
+    int count = 0;
 
-    printf("%s\n", hash);
+    while(fgets(pathBuffer, BUFFER_LEN-1, pathsFileP)) {
+        outputPaths[count] = malloc(strlen(pathBuffer) + 1);
+
+        if (outputPaths[count] == NULL) {
+            printf("Unable to allocate memory");
+            return -1;
+        }
+        strcpy(outputPaths[count], pathBuffer);
+        count++;
+    }
+
+    fclose(pathsFileP);
+    return count;
+}
+
+/* 
+    Read all paths in MONITOR_FILE_PATH,
+    generate hash for each and store it HASH_STORE_FILE_PATH.
+    Return 0 if successful, otherwise -1;
+*/
+int init() {
+
+}
+
+int main() {
+    // FILE *fileP = fopen("files_to_monitor/m1.txt", "r");
+    // char hash[MD5_HEX_LEN + 1];
+    
+    // if (calculateHash(fileP, hash) != 0) {
+    //     return 1;
+    // }
+    // //free(hash);
+
+    // printf("%s\n", hash);
+
+    char *paths[MAX_PATHS];
+    int numOfPaths = getMonitoredPaths(paths);
+    for (int i = 0; i < numOfPaths; i++) {
+        printf("%s\n", paths[i]);
+    }
+
+    // free allocated memory
+    for (int i = 0; i < numOfPaths; i++) {
+        free(paths[i]);
+    }
     
     
     // // print out hash hex string
