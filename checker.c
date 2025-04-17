@@ -172,11 +172,45 @@ int check() {
     return 0;
 }
 
-int main() {
-    check();
+int main(int argc, char *argv[]) {
+    
+    // no args given
+    if (argc <= 1) {
+        printf("No arguments given. Use -h or --help for more information.\n");
+        return 0;
+    }
 
-    // if (init() != 0)
-    //     exit(1);
+    // check for invalid options
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0 ||
+            strcmp(argv[i], "--init") == 0 || strcmp(argv[i], "-i") == 0 ||
+            strcmp(argv[i], "--check") == 0 || strcmp(argv[i], "-c") == 0) {
+            continue;
+        }
+        else {
+            printf("Unrecognized command-line option %s. Use -h or --help for more information.\n", argv[i]);
+            return 0;
+        }
+    }
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+            printf("Help page not implemented yet. Sorry.\n");
+            return 0;
+        }
+        else if (strcmp(argv[i], "--init") == 0 || strcmp(argv[i], "-i") == 0)
+        {
+            if (init() != 0)
+                return 1;
+            printf("Initialization completed.\n");
+        }
+        else if (strcmp(argv[i], "--check") == 0 || strcmp(argv[i], "-c") == 0)
+        {
+            if (check() != 0)
+                return 1;
+            printf("Check completed.\n");
+        }
+    }
 
     // // store hashs
     // FILE *fileP = fopen("hashes.txt", "w");
