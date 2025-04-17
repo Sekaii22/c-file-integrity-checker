@@ -45,7 +45,7 @@ int calculateHash(char *filePath, char *output) {
     }
 
     // reads from file and put into fBuffer
-    while (fgets(fBuffer, BUFFER_LEN-1, file)) {
+    while (fgets(fBuffer, BUFFER_LEN - 1, file)) {
         // pass fBuffer to be digested
         if (!EVP_DigestUpdate(ctxP, fBuffer, strlen(fBuffer))) {
             printf("Error with digest update\n");
@@ -63,7 +63,7 @@ int calculateHash(char *filePath, char *output) {
     char hashBuffer[MD5_HEX_LEN + 1];       // 32 hex characters + null
     int len = 0;
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < sizeof(digestOutput); i++) {
         // digestOutput[i] is a normal 8-bit char, format it as 2 hex char and store the literal
         // len is the address offset
         len += sprintf(hashBuffer + len, "%02x", digestOutput[i]);
@@ -72,9 +72,9 @@ int calculateHash(char *filePath, char *output) {
     // clean up all the resources
     EVP_MD_free(md5P);
     EVP_MD_CTX_free(ctxP);
+    fclose(file);
 
     strcpy(output, hashBuffer);
-    fclose(file);
     return 0;
 }
 
@@ -88,7 +88,7 @@ int getMonitoredPaths(char *monitoredFilePath, char *outputPaths[MAX_PATHS]) {
     char pathBuffer[BUFFER_LEN];
     int count = 0;
 
-    while(fgets(pathBuffer, BUFFER_LEN-1, pathsFileP)) {
+    while(fgets(pathBuffer, BUFFER_LEN - 1, pathsFileP)) {
         pathBuffer[strcspn(pathBuffer, "\n")] = 0;              // remove newline char from path read
 
         outputPaths[count] = malloc(strlen(pathBuffer) + 1);
@@ -122,7 +122,7 @@ int init() {
     FILE *hashStoreFileP = fopen(HASH_STORE_FILE_PATH, "w");
     
     for (int i = 0; i < numOfPaths; i++) {
-        char hash[MD5_HEX_LEN + 1] = {0};
+        char hash[MD5_HEX_LEN + 1];
 
         // calculate the hash for that file and store it in hash variable
         if (calculateHash(monitoredPaths[i], hash) != 0)
@@ -142,17 +142,41 @@ int init() {
     return 0;
 }
 
+/*
+    Compares old hash with new hash.
+    Return 0 if successful, otherwise -1;
+*/
+int check() {
+    FILE *hashStoreFileP = fopen(HASH_STORE_FILE_PATH, "r");
+    char fBuffer[BUFFER_LEN];
+
+    while(fgets(fBuffer, BUFFER_LEN - 1, hashStoreFileP)) {
+        // get old hash
+        fBuffer[strcspn(fBuffer, "\n")] = 0;              // remove newline char from line read
+        char *oldHash = strtok(fBuffer, " ");
+        char *filePath = strtok(NULL, " ");               // filepath associated with the old hash
+
+        // generate new hash
+        char newHash[MD5_HEX_LEN + 1];
+        if (calculateHash(filePath, newHash) != 0)
+            return -1;
+
+        // compare
+        if (strncmp(oldHash, newHash, MD5_HEX_LEN) != 0) {
+            printf("%s has been changed\n", filePath);
+        }
+        
+    }
+
+    fclose(hashStoreFileP);
+    return 0;
+}
+
 int main() {
-    init();
-    // char out[MD5_HEX_LEN + 1];
-    // calculateHash("files_to_monitor/m2.txt", out);
-    // printf("%s\n", out);
-    
-    // // print out hash hex string
-    // for (int i = 0; i < 16; i++) {
-    //     printf("%02x", digestOutput[i]);
-    // }
-    // printf("\n");
+    check();
+
+    // if (init() != 0)
+    //     exit(1);
 
     // // store hashs
     // FILE *fileP = fopen("hashes.txt", "w");
