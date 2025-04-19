@@ -1,6 +1,6 @@
-monitor.txt
-files_to_monitor
-hashes.txt
 .vscode
 checker
-*.log
+/monitor.txt
+/files_to_monitor
+/hashes.txt
+/*.log

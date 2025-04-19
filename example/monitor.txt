@@ -1,0 +1,4 @@
+files_to_monitor/m1.txt
+files_to_monitor/m2.txt
+files_to_monitor/m3.txt
+files_to_monitor/nested_folder/nested_m1.txt
