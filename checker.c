@@ -7,6 +7,7 @@
 #define MD5_HEX_LEN 32 
 #define MONITOR_FILE_PATH "monitor.txt"
 #define HASH_STORE_FILE_PATH "hashes.txt"
+#define LOG_FILE_PATH "checker.log"
 
 /* 
     BUILD COMMAND: gcc -fsanitize=address -o checker checker.c -lssl -lcrypto
@@ -14,11 +15,26 @@
 */
 
 /*
+    Logs message to a file and automatically move to next line.
+*/
+void logger(char *msg) {
+    FILE *logP = fopen(LOG_FILE_PATH, "a");
+    fprintf(logP, "%s\n", msg);
+    fclose(logP);
+}
+
+/*
     Prints fail to read file message.
 */
 void printFileFailRead(char *filePath) {
     printf("Fail to read: %s\n", filePath);
     printf("Abort execution...\n");
+
+    // print to log
+    char msg[300];
+    sprintf(msg, "Fail to read: %s", filePath);
+    logger(msg);
+    logger("Abort execution...");
 }
 
 /* 
@@ -44,6 +60,7 @@ int calculateHash(char *filePath, char *output) {
     ctxP = EVP_MD_CTX_new();
     if (!ctxP) {
         printf("Digest context is null\n");
+        logger("Digest context is null");
         return -1;
     }
 
@@ -51,12 +68,14 @@ int calculateHash(char *filePath, char *output) {
     md5P = EVP_MD_fetch(NULL, "MD5", NULL);
     if (md5P == NULL) {
         printf("Fetching failed\n");
+        logger("Fetching failed");
         return -1;
     }
 
     // initialize digest operation
     if (!EVP_DigestInit_ex(ctxP, md5P, NULL)) {
         printf("Error with initializing digest\n");
+        logger("Error with initializing digest");
         return -1;
     }
 
@@ -65,13 +84,15 @@ int calculateHash(char *filePath, char *output) {
         // pass fBuffer to be digested
         if (!EVP_DigestUpdate(ctxP, fBuffer, strlen(fBuffer))) {
             printf("Error with digest update\n");
+            logger("Error with digest update");
             return -1;
         }
     }
 
     // calculate the final digest
     if (!EVP_DigestFinal_ex(ctxP, digestOutput, NULL)) {
-        printf("Error with calcualting digest\n");
+        printf("Error with calculating final digest\n");
+        logger("Error with calculating final digest");
         return -1;
     }
 
@@ -112,10 +133,11 @@ int getMonitoredPaths(char *monitoredFilePath, char *outputPaths[MAX_PATHS]) {
     while(fgets(pathBuffer, BUFFER_LEN - 1, pathsFileP)) {
         pathBuffer[strcspn(pathBuffer, "\n")] = 0;              // remove newline char from path read
 
-        outputPaths[count] = malloc(strlen(pathBuffer) + 1);
+        outputPaths[count] = malloc(strlen(pathBuffer) + 1);    // strlen dont count null terminating char
 
         if (outputPaths[count] == NULL) {
-            printf("Unable to allocate memory");
+            printf("Unable to allocate memory\n");
+            logger("Unable to allocate memory");
             return -1;
         }
         strcpy(outputPaths[count], pathBuffer);
@@ -150,8 +172,12 @@ int init() {
             return -1;
 
         // store hash and file path
-        fputs(hash, hashStoreFileP);
-        fprintf(hashStoreFileP, " %s\n", monitoredPaths[i]);
+        fprintf(hashStoreFileP, "%s %s\n", hash, monitoredPaths[i]);
+
+        // log results
+        char msg[300];
+        sprintf(msg, "%s %s", hash, monitoredPaths[i]);
+        logger(msg);
     }
 
     // free allocated memory
@@ -189,14 +215,23 @@ int check() {
 
         // compare
         if (strncmp(oldHash, newHash, MD5_HEX_LEN) != 0) {
+            // changes in hash detected
             // red color text
             printf("\033[1;31m");
             printf("%s has changed!\n", filePath);
             printf("\033[0m");
             printf("Previous hash:\t %s\n", oldHash);
             printf("Current hash:\t %s\n\n", newHash);
+
+            // log diff
+            char msg[300];
+            sprintf(msg, "%s has changed!", filePath);
+            logger(msg);
+            sprintf(msg, "Previous hash:\t %s", oldHash);
+            logger(msg);
+            sprintf(msg, "Current hash:\t %s", newHash);
+            logger(msg);
         }
-        
     }
 
     fclose(hashStoreFileP);
@@ -215,7 +250,7 @@ void printHelp() {
     printf("\n");
     printf("   Options:\n");
     printf("    -h, --help\t  Prints help information.\n");
-    printf("    -i, --init\t  Establish bashline hashes from files specified in monitor.txt.\n");
+    printf("    -i, --init\t  Establish bashline hashes from files specified in %s.\n", MONITOR_FILE_PATH);
     printf("    -c, --check\t  Check bashline hashes against current hashes.\n");
 }
 
@@ -224,6 +259,7 @@ int main(int argc, char *argv[]) {
     // no args given
     if (argc <= 1) {
         printf("No arguments given. Use -h or --help for more information.\n");
+        logger("No arguments given.");
         return 0;
     }
 
@@ -242,27 +278,35 @@ int main(int argc, char *argv[]) {
     }
     else if (strcmp(argv[1], "--init") == 0 || strcmp(argv[1], "-i") == 0)
     {
+        logger("Start initialization");
         if (init() != 0) {
             // red color text
             printf("\033[1;31m");
             printf("Initiation terminated\n");
             printf("\033[0m");
+
+            logger("Initiation terminated\n");
             return 1;
         }
 
         printf("Initialization completed\n");
+        logger("Initialization completed\n");
     }
     else if (strcmp(argv[1], "--check") == 0 || strcmp(argv[1], "-c") == 0)
     {
+        logger("Start integrity check");
         if (check() != 0) {
             // red color text
             printf("\033[1;31m");
             printf("Integrity check terminated\n");
             printf("\033[0m");
+
+            logger("Integrity check terminated\n");
             return 1;
         }
 
         printf("Check completed\n");
+        logger("Check completed\n");
     }
 
     // // store hashs

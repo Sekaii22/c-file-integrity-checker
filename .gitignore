@@ -3,3 +3,4 @@ files_to_monitor
 hashes.txt
 .vscode
 checker
+*.log
