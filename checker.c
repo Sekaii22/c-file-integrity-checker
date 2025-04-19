@@ -8,7 +8,10 @@
 #define MONITOR_FILE_PATH "monitor.txt"
 #define HASH_STORE_FILE_PATH "hashes.txt"
 
-/* BUILD COMMAND: gcc -fsanitize=address -o checker checker.c -lssl -lcrypto */
+/* 
+    BUILD COMMAND: gcc -fsanitize=address -o checker checker.c -lssl -lcrypto
+    RUN COMMAND: ./checker [1-option] 
+*/
 
 /* 
     Takes in a file path and string pointer, 
@@ -21,8 +24,8 @@ int calculateHash(char *filePath, char *output) {
 
     EVP_MD_CTX *ctxP = NULL;
     EVP_MD *md5P = NULL;
-    unsigned char digestOutput[16];                // md5 output is 32 hex, 1 hex is 4 bits so total is 16 bytes
-                                                   // unsigned is needed to use all 8 bits of char for storing 2 hex
+    unsigned char digestOutput[16];                // md5 output is 32 hex, 1 hex is 4 bits so total is 16 bytes needed,
+                                                   // unsigned is needed to use all 8 bits of char for storing 2 hex.
 
     // create new context for digest operation
     ctxP = EVP_MD_CTX_new();
@@ -172,6 +175,22 @@ int check() {
     return 0;
 }
 
+void printHelp() {
+    printf("****************************************\n");
+    printf("*                                      *\n");
+    printf("*        File Integrity Checker        *\n");
+    printf("*                                      *\n");
+    printf("****************************************\n");
+    printf("\n");
+    printf("./checker [option]\n");
+    printf("   Checks the integrity of files by comparing baseline hashes with current hashes.\n");
+    printf("\n");
+    printf("   Options:\n");
+    printf("    -h, --help\t  Prints help information.\n");
+    printf("    -i, --init\t  Establish bashline hashes from files specified in monitor.txt.\n");
+    printf("    -c, --check\t  Check bashline hashes against current hashes.\n");
+}
+
 int main(int argc, char *argv[]) {
     
     // no args given
@@ -181,35 +200,29 @@ int main(int argc, char *argv[]) {
     }
 
     // check for invalid options
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0 ||
-            strcmp(argv[i], "--init") == 0 || strcmp(argv[i], "-i") == 0 ||
-            strcmp(argv[i], "--check") == 0 || strcmp(argv[i], "-c") == 0) {
-            continue;
-        }
-        else {
-            printf("Unrecognized command-line option %s. Use -h or --help for more information.\n", argv[i]);
+    if (strcmp(argv[1], "--help") != 0 && strcmp(argv[1], "-h") != 0 &&
+            strcmp(argv[1], "--init") != 0 && strcmp(argv[1], "-i") != 0 &&
+            strcmp(argv[1], "--check") != 0 && strcmp(argv[1], "-c") != 0) {
+
+            printf("Unrecognized command-line option %s. Use -h or --help for more information.\n", argv[1]);
             return 0;
-        }
     }
 
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
-            printf("Help page not implemented yet. Sorry.\n");
-            return 0;
-        }
-        else if (strcmp(argv[i], "--init") == 0 || strcmp(argv[i], "-i") == 0)
-        {
-            if (init() != 0)
-                return 1;
-            printf("Initialization completed.\n");
-        }
-        else if (strcmp(argv[i], "--check") == 0 || strcmp(argv[i], "-c") == 0)
-        {
-            if (check() != 0)
-                return 1;
-            printf("Check completed.\n");
-        }
+    if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+        printHelp();
+        return 0;
+    }
+    else if (strcmp(argv[1], "--init") == 0 || strcmp(argv[1], "-i") == 0)
+    {
+        if (init() != 0)
+            return 1;
+        printf("Initialization completed.\n");
+    }
+    else if (strcmp(argv[1], "--check") == 0 || strcmp(argv[1], "-c") == 0)
+    {
+        if (check() != 0)
+            return 1;
+        printf("Check completed.\n");
     }
 
     // // store hashs
