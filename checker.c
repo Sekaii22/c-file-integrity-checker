@@ -13,6 +13,14 @@
     RUN COMMAND: ./checker [1-option] 
 */
 
+/*
+    Prints fail to read file message.
+*/
+void printFileFailRead(char *filePath) {
+    printf("Fail to read: %s\n", filePath);
+    printf("Abort execution...\n");
+}
+
 /* 
     Takes in a file path and string pointer, 
     calculate the hash of the file and store it in string pointer.
@@ -20,6 +28,11 @@
 */
 int calculateHash(char *filePath, char *output) {
     FILE *file = fopen(filePath, "r");
+    if (file == NULL) {
+        printFileFailRead(filePath);
+        return -1;
+    }
+
     char fBuffer[BUFFER_LEN];
 
     EVP_MD_CTX *ctxP = NULL;
@@ -84,10 +97,15 @@ int calculateHash(char *filePath, char *output) {
 /*
     Takes an array of char pointer,
     Read paths from monitor.txt and store in array of char pointer.
-    Return number of paths.
+    Return number of paths, if fail, return -1.
 */
 int getMonitoredPaths(char *monitoredFilePath, char *outputPaths[MAX_PATHS]) {
     FILE* pathsFileP = fopen(monitoredFilePath, "r");
+    if (pathsFileP == NULL) {
+        printFileFailRead(monitoredFilePath);
+        return -1;
+    }
+
     char pathBuffer[BUFFER_LEN];
     int count = 0;
 
@@ -151,6 +169,11 @@ int init() {
 */
 int check() {
     FILE *hashStoreFileP = fopen(HASH_STORE_FILE_PATH, "r");
+    if (hashStoreFileP == NULL) {
+        printFileFailRead(HASH_STORE_FILE_PATH);
+        return -1;
+    }
+    
     char fBuffer[BUFFER_LEN];
 
     while(fgets(fBuffer, BUFFER_LEN - 1, hashStoreFileP)) {
@@ -214,15 +237,27 @@ int main(int argc, char *argv[]) {
     }
     else if (strcmp(argv[1], "--init") == 0 || strcmp(argv[1], "-i") == 0)
     {
-        if (init() != 0)
+        if (init() != 0) {
+            // red color text
+            printf("\033[1;31m");
+            printf("Initiation terminated\n");
+            printf("\033[0m");
             return 1;
-        printf("Initialization completed.\n");
+        }
+
+        printf("Initialization completed\n");
     }
     else if (strcmp(argv[1], "--check") == 0 || strcmp(argv[1], "-c") == 0)
     {
-        if (check() != 0)
+        if (check() != 0) {
+            // red color text
+            printf("\033[1;31m");
+            printf("Integrity check terminated\n");
+            printf("\033[0m");
             return 1;
-        printf("Check completed.\n");
+        }
+
+        printf("Check completed\n");
     }
 
     // // store hashs
