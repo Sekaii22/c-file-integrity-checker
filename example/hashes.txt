@@ -1,4 +1,6 @@
 a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-e7acd36456bcf42be169400fc1ccb382 files_to_monitor/m2.txt
-9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
+2990b75a2b8105843f8887f06d7c9fe0 files_to_monitor/m2.txt
+d62d9b1c85cdc0d5088fa6f03cd35fc7 files_to_monitor/m3.txt
+fa5eb8eb083a7b712473738042f12f0a files_to_monitor/.hidden
 48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
+61313221f05fa4d0e9adbdc4b78f47f7 files_to_monitor/nested_folder/
