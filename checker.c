@@ -189,7 +189,12 @@ int check() {
 
         // compare
         if (strncmp(oldHash, newHash, MD5_HEX_LEN) != 0) {
-            printf("%s has been changed\n", filePath);
+            // red color text
+            printf("\033[1;31m");
+            printf("%s has changed!\n", filePath);
+            printf("\033[0m");
+            printf("Previous hash:\t %s\n", oldHash);
+            printf("Current hash:\t %s\n\n", newHash);
         }
         
     }
