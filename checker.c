@@ -170,6 +170,10 @@ int strCompare(const void *a, const void *b) {
     return strcmp(*(const char **)a, *(const char **)b);
 }
 
+/*
+    Dir hash is calculated by taking all the hash results of 
+    it's entries (files and dirs) and then hashing them all together.
+*/
 int calculateDirHash(char *dirPath, char *finalOutput) {
     struct dirent *dirEntry;
     DIR *dirP = opendir(dirPath);
@@ -381,9 +385,20 @@ int init() {
     for (int i = 0; i < numOfPaths; i++) {
         char hash[MD5_HEX_LEN + 1];
 
-        // calculate the hash for that file and store it in hash variable
-        if (calculateHash(monitoredPaths[i], hash) != 0)
-            return -1;
+        if (isFile(monitoredPaths[i])) {
+            printf("Currently calculating file hash: %s\n", monitoredPaths[i]);
+            
+            // calculate the hash for that file and store it in hash variable
+            if (calculateHash(monitoredPaths[i], hash) != 0)
+                return -1;
+        }
+        else if (isDir(monitoredPaths[i])) {
+            printf("Currently calculating dir hash: %s\n", monitoredPaths[i]);
+            
+            // calculate the hash for that dir and store it in hash variable
+            if (calculateDirHash(monitoredPaths[i], hash) != 0)
+                return -1;
+        }
 
         // store hash and file path
         fprintf(hashStoreFileP, "%s %s\n", hash, monitoredPaths[i]);
@@ -424,8 +439,32 @@ int check() {
 
         // generate new hash
         char newHash[MD5_HEX_LEN + 1];
-        if (calculateHash(filePath, newHash) != 0)
-            return -1;
+
+        if (isFile(filePath)) {
+            printf("Currently calculating new hash for file: %s\n", filePath);
+            
+            // calculate the hash for that file and store it in hash variable
+            calculateHash(filePath, newHash);
+        }
+        else if (isDir(filePath)) {
+            printf("Currently calculating new hash for dir: %s\n", filePath);
+            
+            // calculate the hash for that dir and store it in hash variable
+            calculateDirHash(filePath, newHash);
+        }
+        else{
+            // file/dir does not exists
+            // red color text
+            printf("\033[1;31m");
+            printf("%s no longer exists\n", filePath);
+            printf("\033[0m");
+
+            char msg[MSG_LEN];
+            sprintf(msg, "%s no longer exists", filePath);
+            logger(msg);
+
+            continue;
+        }
 
         // compare
         if (strncmp(oldHash, newHash, MD5_HEX_LEN) != 0) {
@@ -435,7 +474,7 @@ int check() {
             printf("%s has changed!\n", filePath);
             printf("\033[0m");
             printf("Previous hash:\t %s\n", oldHash);
-            printf("Current hash:\t %s\n\n", newHash);
+            printf("Current hash:\t %s\n", newHash);
 
             // log diff
             char msg[MSG_LEN];
@@ -473,7 +512,7 @@ int main(int argc, char *argv[]) {
     // no args given
     if (argc <= 1) {
         char temp[MD5_HEX_LEN + 1];
-        calculateDirHash("files_to_monitor", temp);
+        calculateDirHash("../test", temp);
         printf("Final hash: %s\n", temp);
 
         printf("No arguments given. Use -h or --help for more information.\n");
@@ -500,10 +539,10 @@ int main(int argc, char *argv[]) {
         if (init() != 0) {
             // red color text
             printf("\033[1;31m");
-            printf("Initiation terminated\n");
+            printf("Initialization terminated\n");
             printf("\033[0m");
 
-            logger("Initiation terminated\n");
+            logger("Initialization terminated\n");
             return 1;
         }
 
@@ -526,17 +565,6 @@ int main(int argc, char *argv[]) {
         printf("Check completed\n");
         logger("Check completed\n");
     }
-
-    // // store hashs
-    // FILE *fileP = fopen("hashes.txt", "w");
-    // for (int i = 0; i < 16; i++)
-    //     fprintf(fileP, "%02x", digestOutput[i]);
-    // fprintf(fileP, " %s", "some_path.txt");
-
-    // // or
-    // fputs(hashBuffer, fileP);
-    // fprintf(fileP, " %s", "some_path.txt");
-    // fclose(fileP);
 
     return 0;
 }
