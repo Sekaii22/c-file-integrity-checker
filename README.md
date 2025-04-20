@@ -1,5 +1,5 @@
 # file-integrity-checker
-Monitor specific files and directories for unauthorized changes using hashing.
+Monitor specific files and directories for unauthorized changes using hashing. Checks the integrity of files by comparing baseline hashes with current hashes.
 
 1. Add the paths for files and directories that you want to monitor into `monitor.txt`.
 
@@ -27,3 +27,5 @@ Options:
 
 ---
 ### Reflections
+I chose to do this topic after my simple-file-scanner project because I wanted to learn and touch more on the blue-side of cybersecurity. I want to have more hands-on experience with hashing as I have never really used it before even though I did learned about it in University. So, this topic seems to be quite interesting to me. It is also quite doable with my current state of experience in C, not too easy that I don't learn anything, but also not too difficult that I would find it too overwhelming to handle.
+In this project, I managed to practice what I learned in my previous project such as file I/O and memory management as well as learned new things like how to generate hash using the OpenSSL library, secure programming practices, and working with binary data and converting it into readable formats.
