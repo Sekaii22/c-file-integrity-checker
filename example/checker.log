@@ -1,68 +1,68 @@
-Start initialization
-a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-b5cb9ddc8a3eb2e2b0df15b1dde03ca4 files_to_monitor/m2.txt
-9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
-48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
-Initialization completed
+20/04/25 05:36:43	Start initialization
+20/04/25 05:36:43	a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
+20/04/25 05:36:43	b5cb9ddc8a3eb2e2b0df15b1dde03ca4 files_to_monitor/m2.txt
+20/04/25 05:36:43	9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
+20/04/25 05:36:43	48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
+20/04/25 05:36:43	Initialization completed
 
-Start integrity check
-Check completed
+20/04/25 05:36:59	Start integrity check
+20/04/25 05:36:59	Check completed
 
-Start integrity check
-files_to_monitor/m2.txt has changed!
-Previous hash:	 b5cb9ddc8a3eb2e2b0df15b1dde03ca4
-Current hash:	 e7acd36456bcf42be169400fc1ccb382
-Check completed
+20/04/25 05:37:40	Start integrity check
+20/04/25 05:37:40	files_to_monitor/m2.txt has changed!
+20/04/25 05:37:40	Previous hash:	 b5cb9ddc8a3eb2e2b0df15b1dde03ca4
+20/04/25 05:37:40	Current hash:	 e7acd36456bcf42be169400fc1ccb382
+20/04/25 05:37:40	Check completed
 
-Start integrity check
-files_to_monitor/m2.txt has changed!
-Previous hash:	 b5cb9ddc8a3eb2e2b0df15b1dde03ca4
-Current hash:	 e7acd36456bcf42be169400fc1ccb382
-files_to_monitor/nested_folder/nested_m1.txt has changed!
-Previous hash:	 48c8783c476895dae90955f31c279367
-Current hash:	 edcaf77e5be13c80cd676771aab153ec
-Check completed
+20/04/25 05:57:22	Start integrity check
+20/04/25 05:57:22	files_to_monitor/m2.txt has changed!
+20/04/25 05:57:22	Previous hash:	 b5cb9ddc8a3eb2e2b0df15b1dde03ca4
+20/04/25 05:57:22	Current hash:	 e7acd36456bcf42be169400fc1ccb382
+20/04/25 05:57:22	files_to_monitor/nested_folder/nested_m1.txt has changed!
+20/04/25 05:57:22	Previous hash:	 48c8783c476895dae90955f31c279367
+20/04/25 05:57:22	Current hash:	 edcaf77e5be13c80cd676771aab153ec
+20/04/25 05:57:22	Check completed
 
-Start integrity check
-Fail to read: hashes.txt
-Abort execution...
-Integrity check terminated
+20/04/25 05:59:41	Start integrity check
+20/04/25 05:59:41	Fail to read: hashes.txt
+20/04/25 05:59:41	Abort execution...
+20/04/25 05:59:41	Integrity check terminated
 
-Start initialization
-a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-e7acd36456bcf42be169400fc1ccb382 files_to_monitor/m2.txt
-9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
-edcaf77e5be13c80cd676771aab153ec files_to_monitor/nested_folder/nested_m1.txt
-Initialization completed
+20/04/25 06:12:09	Start initialization
+20/04/25 06:12:09	a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
+20/04/25 06:12:09	e7acd36456bcf42be169400fc1ccb382 files_to_monitor/m2.txt
+20/04/25 06:12:09	9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
+20/04/25 06:12:09	edcaf77e5be13c80cd676771aab153ec files_to_monitor/nested_folder/nested_m1.txt
+20/04/25 06:12:09	Initialization completed
 
-Start initialization
-a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-e7acd36456bcf42be169400fc1ccb382 files_to_monitor/m2.txt
-9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
-48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
-Initialization completed
+20/04/25 06:14:21	Start initialization
+20/04/25 06:14:21	a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
+20/04/25 06:14:21	e7acd36456bcf42be169400fc1ccb382 files_to_monitor/m2.txt
+20/04/25 06:14:21	9970939c98e06362b0b1b9fe8a5e954c files_to_monitor/m3.txt
+20/04/25 06:14:21	48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
+20/04/25 06:14:21	Initialization completed
 
-Start initialization
-a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-2990b75a2b8105843f8887f06d7c9fe0 files_to_monitor/m2.txt
-d62d9b1c85cdc0d5088fa6f03cd35fc7 files_to_monitor/m3.txt
-fa5eb8eb083a7b712473738042f12f0a files_to_monitor/.hidden
-48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
-b813319af36d4a21554760f9eeb7b154 files_to_monitor/nested_folder/
-Initialization completed
+20/04/25 07:14:21	Start initialization
+20/04/25 07:14:21	a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
+20/04/25 07:14:21	2990b75a2b8105843f8887f06d7c9fe0 files_to_monitor/m2.txt
+20/04/25 07:14:21	d62d9b1c85cdc0d5088fa6f03cd35fc7 files_to_monitor/m3.txt
+20/04/25 07:14:21	fa5eb8eb083a7b712473738042f12f0a files_to_monitor/.hidden
+20/04/25 07:14:21	48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
+20/04/25 07:14:21	b813319af36d4a21554760f9eeb7b154 files_to_monitor/nested_folder/
+20/04/25 07:14:21	Initialization completed
 
-Start integrity check
-files_to_monitor/nested_folder/ has changed!
-Previous hash:	 b813319af36d4a21554760f9eeb7b154
-Current hash:	 61313221f05fa4d0e9adbdc4b78f47f7
-Check completed
+20/04/25 07:15:40	Start integrity check
+20/04/25 07:15:40	files_to_monitor/nested_folder/ has changed!
+20/04/25 07:15:40	Previous hash:	 b813319af36d4a21554760f9eeb7b154
+20/04/25 07:15:40	Current hash:	 61313221f05fa4d0e9adbdc4b78f47f7
+20/04/25 07:15:40	Check completed
 
-Start initialization
-a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
-2990b75a2b8105843f8887f06d7c9fe0 files_to_monitor/m2.txt
-d62d9b1c85cdc0d5088fa6f03cd35fc7 files_to_monitor/m3.txt
-fa5eb8eb083a7b712473738042f12f0a files_to_monitor/.hidden
-48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
-61313221f05fa4d0e9adbdc4b78f47f7 files_to_monitor/nested_folder/
-Initialization completed
+20/04/25 07:16:01	Start initialization
+20/04/25 07:16:01	a4f6d49c7bf94c0d3d092cad41c838ee files_to_monitor/m1.txt
+20/04/25 07:16:01	2990b75a2b8105843f8887f06d7c9fe0 files_to_monitor/m2.txt
+20/04/25 07:16:01	d62d9b1c85cdc0d5088fa6f03cd35fc7 files_to_monitor/m3.txt
+20/04/25 07:16:01	fa5eb8eb083a7b712473738042f12f0a files_to_monitor/.hidden
+20/04/25 07:16:01	48c8783c476895dae90955f31c279367 files_to_monitor/nested_folder/nested_m1.txt
+20/04/25 07:16:01	61313221f05fa4d0e9adbdc4b78f47f7 files_to_monitor/nested_folder/
+20/04/25 07:16:01	Initialization completed
 

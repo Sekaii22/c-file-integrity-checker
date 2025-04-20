@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define BUFFER_LEN 1024
 #define MAX_PATHS 1000
@@ -24,7 +25,19 @@
 */
 void logger(char *msg) {
     FILE *logP = fopen(LOG_FILE_PATH, "a");
-    fprintf(logP, "%s\n", msg);
+
+    // get current time in secs
+    struct tm *pCalenderTime;
+    time_t timeInSec = time(NULL);
+
+    // convert it to local time
+    pCalenderTime = localtime(&timeInSec);
+
+    // write the date in a certain format
+    char timeBuffer[50];
+    strftime(timeBuffer, sizeof(timeBuffer) - 1, "%d/%m/%y %T", pCalenderTime);
+
+    fprintf(logP, "%s\t%s\n", timeBuffer, msg);
     fclose(logP);
 }
 
@@ -511,10 +524,6 @@ int main(int argc, char *argv[]) {
     
     // no args given
     if (argc <= 1) {
-        char temp[MD5_HEX_LEN + 1];
-        calculateDirHash("../test", temp);
-        printf("Final hash: %s\n", temp);
-
         printf("No arguments given. Use -h or --help for more information.\n");
         logger("No arguments given.");
         return 0;
